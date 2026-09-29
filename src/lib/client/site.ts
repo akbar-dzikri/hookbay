@@ -7,7 +7,7 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 export function useOrigin(): string {
   const [origin, setOrigin] = useState(SITE_URL);
   useEffect(() => {
-    if (!origin) setOrigin(window.location.origin);
-  }, [origin]);
+    setOrigin(window.location.origin);
+  }, []);
   return origin;
 }

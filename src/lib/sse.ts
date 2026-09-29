@@ -35,6 +35,10 @@ export function createEventStream({ endpointId, initial, signal }: StreamOptions
         write(`event: request\ndata: ${JSON.stringify(event)}\n\n`);
       };
 
+      // Flush response headers immediately so the browser opens the connection
+      // even when the endpoint has no captured requests yet.
+      write(': open\n\n');
+
       for (const event of initial) onEvent(event);
 
       const channel = channelName(endpointId);

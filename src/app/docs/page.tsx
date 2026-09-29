@@ -3,13 +3,14 @@ import { CopyButton } from '@/components/ui/interactive';
 import { JsonBlock } from '@/components/ui/primitives';
 import { SiteFooter } from '@/components/site/footer';
 import { SiteNav } from '@/components/site/nav';
+import { getRequestOrigin } from '@/lib/request-origin';
 
 export const metadata: Metadata = {
   title: 'Docs',
   description: 'The Hookbay ingest contract, relay behaviour, and HTTP API.',
 };
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gw-4310.dikicodes.com';
+export const dynamic = 'force-dynamic';
 
 function CodeCard({
   title,
@@ -104,7 +105,8 @@ const ROUTES: { method: string; path: string; description: string; auth: string 
   },
 ];
 
-export default function DocsPage(): React.JSX.Element {
+export default async function DocsPage(): Promise<React.JSX.Element> {
+  const BASE = await getRequestOrigin();
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <SiteNav />
