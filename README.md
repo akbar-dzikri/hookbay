@@ -5,9 +5,11 @@ real time, inspect every header and byte, then replay or relay it to your real e
 
 Built in one session as a DeepSeek V4.1 capability showcase on the OpenCode harness.
 
-- Live sandbox: `https://gw-4310.dikicodes.com/demo`
-- Docs: `https://gw-4310.dikicodes.com/docs`
-- Health: `https://gw-4310.dikicodes.com/api/health`
+- Deployment target: `https://gw-4310.dikicodes.com` (registered with `gw add 4310 --no-access`)
+- Sandbox: `/demo` · Docs: `/docs` · Health: `/api/health`
+
+See [Operations](#operations) for how the app is published and what to do if `gw` cannot reach the
+Cloudflare API.
 
 ## What it does
 
@@ -109,13 +111,38 @@ and the relay (success, retry-then-succeed, permanent failure, blocked metadata 
 
 ## Operations
 
-The app runs as a systemd service on port 4310, with a Cloudflare tunnel publishing it.
+The app runs as a systemd service on port 4310.
 
 ```bash
 pnpm build
 systemctl restart hookbay
 curl -s localhost:4310/api/health
 ```
+
+### Publishing to the internet
+
+The intended public URL is `https://gw-4310.dikicodes.com`, created by the host's `gw` CLI:
+
+```bash
+gw add 4310 --no-access     # CNAME + tunnel route for gw-4310.dikicodes.com
+gw ls                       # confirm the registration
+```
+
+`gw` authenticates with `CLOUDFLARE_API_TOKEN` (from the environment or `~/.bashrc`). If that token
+is expired or revoked you will see `10000: Authentication error` and no DNS record is created. In
+that case, republish with a current token and run `gw add 4310 --no-access` again.
+
+Until then the app is still reachable through a tunnel that does not need the Cloudflare API. The
+host runs `hookbay-tunnel.service`, which forwards a public HTTPS URL to `127.0.0.1:4310` and writes
+the current URL to `/run/hookbay-public.url`:
+
+```bash
+cat /run/hookbay-public.url
+systemctl status hookbay-tunnel
+```
+
+That URL changes when the tunnel reconnects, which is why the `gw` registration is the preferred
+target.
 
 The database lives at `data/hookbay.db` and is excluded from git. Delete it to start from a clean
 seed.
