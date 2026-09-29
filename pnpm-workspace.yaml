@@ -1,0 +1,6 @@
+nodeLinker: hoisted
+allowBuilds:
+  unrs-resolver: true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true
